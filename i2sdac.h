@@ -11,6 +11,7 @@ public:
 	// Tries to write a sample into the DMA buffer
 	// Tries again until the sample has been accepted
 	void writeSample(int16_t left, int16_t right);
+	void writeSample(float left, float right);
 
 private:
 	int8_t port;

@@ -51,6 +51,11 @@ void I2sDAC::writeSample(int16_t left, int16_t right)
 		written = write(left, right);
 }
 
+void I2sDAC::writeSample(float left, float right)
+{
+	writeSample(static_cast<int16_t>(left * 32767), static_cast<int16_t>(right * 32767));
+}
+
 size_t I2sDAC::write(int16_t left, int16_t right)
 {
 	// Merge samples
