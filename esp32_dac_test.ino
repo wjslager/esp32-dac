@@ -2,8 +2,9 @@
 #include "i2sdac.h"
 
 I2sDAC dac;
-
 TaskHandle_t AudioTask;
+
+const bool testFloat = true;
 
 // ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
 void setup()
@@ -31,22 +32,28 @@ void AudioThread(void *pvParameter)
 {
 	unsigned int frameCount = 0;
 	int16_t sample[2];
+	float sampleFloat[2];
 
 	Serial.print("Audio thread started at core: ");
 	Serial.println(xPortGetCoreID());
 
 	while(1)
 	{
-		// Random sample for both the left and right channel
-		// Generates white noise
+		// Generate white noise for both channels
 		for (unsigned s = 0; s < 2; ++s)
 			sample[s] = random(-32768, 32767);
 
-		float sampleFloat = static_cast<float>(sample[0]) / 32767.0f;
-
-//		dac.writeSample(sample[0], sample[1]);
-
-		dac.writeSample(sampleFloat, sampleFloat);
+		// Both methods should sound the same and be as loud as eachother
+		if (testFloat)
+		{
+			sampleFloat[0] = static_cast<float>(sample[0]) / 32767.0f;
+			sampleFloat[1] = static_cast<float>(sample[1]) / 32767.0f;
+			dac.writeSample(sampleFloat[0], sampleFloat[1]);
+		}
+		else
+		{
+			dac.writeSample(sample[0], sample[1]);
+		}
 
 		// Pause thread after delivering 64 samples so that other threads can do stuff
 		if (frameCount++ % 64 == 0)
